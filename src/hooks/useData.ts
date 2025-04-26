@@ -1,5 +1,5 @@
 import apiClient from "@/services/api.client";
-import axios, { CanceledError } from "axios";
+import axios, { AxiosRequestConfig, CanceledError } from "axios";
 import { useEffect, useState } from "react";
 
 export interface Data<T> {
@@ -13,29 +13,39 @@ export interface FetchResponse<T> {
   results: T[];
 }
 
-const useData = <T>(endpoint: string) => {
+const useData = <T>(
+  endpoint: string,
+  requestConfig?: AxiosRequestConfig,
+  deps?: any[]
+) => {
   const [data, setData] = useState<T[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
 
-  useEffect(() => {
-    var controller = new AbortController();
+  useEffect(
+    () => {
+      var controller = new AbortController();
 
-    setLoading(true);
-    apiClient
-      .get<FetchResponse<T>>(endpoint, { signal: controller.signal })
-      .then((res) => {
-        setData(res.data.results);
-        setLoading(false);
-      })
-      .catch((err) => {
-        if (err instanceof CanceledError) return;
-        setError(err.message);
-        setLoading(false);
-      });
+      setLoading(true);
+      apiClient
+        .get<FetchResponse<T>>(endpoint, {
+          signal: controller.signal,
+          ...requestConfig,
+        })
+        .then((res) => {
+          setData(res.data.results);
+          setLoading(false);
+        })
+        .catch((err) => {
+          if (err instanceof CanceledError) return;
+          setError(err.message);
+          setLoading(false);
+        });
 
-    return () => controller.abort();
-  }, []);
+      return () => controller.abort();
+    },
+    deps ? [...deps] : []
+  );
 
   return { data, error, isLoading };
 };
