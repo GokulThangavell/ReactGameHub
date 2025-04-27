@@ -1,8 +1,8 @@
 import apiClient from "@/services/api.client";
-import axios, { AxiosRequestConfig, CanceledError } from "axios";
+import { AxiosRequestConfig, CanceledError } from "axios";
 import { useEffect, useState } from "react";
 
-export interface Data<T> {
+export interface Data {
   id: number;
   name: string;
   slug: string;
