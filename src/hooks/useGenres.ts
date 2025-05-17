@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import APIClient, { FetchResponse } from "@/services/api.client";
+import { convertHoursToMilliSeconds } from "../utils/timeConverter";
 // import genres from "../data/genres";
 
 export interface Genre {
@@ -16,7 +17,7 @@ const useGenres = () =>
   useQuery({
     queryKey: ["genres"],
     queryFn: apiClient.getAll,
-    staleTime: 24 * 60 * 60 * 1000, //24 hrs
+    staleTime: convertHoursToMilliSeconds(24), //24 hrs
     // initialData:
   });
 
